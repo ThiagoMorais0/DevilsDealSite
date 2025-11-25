@@ -1,0 +1,61 @@
+/* Global Variables */
+:root {
+  --color-background: #000000;
+  --color-text: #ffffff;
+  --color-primary: #8a0303; /* Blood Red */
+  --color-secondary: #1a1a1a;
+  --color-accent: #ff0000;
+  
+  --font-main: 'Inter', sans-serif;
+  --font-display: 'Cinzel', serif; /* Example for headers */
+}
+
+/* Reset & Base Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  position: relative;
+  font-weight: normal;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  font-family: var(--font-main);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: 0.3s;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Utility Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.bg-dark {
+  background-color: var(--color-background);
+}

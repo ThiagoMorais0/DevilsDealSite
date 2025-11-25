@@ -1,0 +1,47 @@
+{
+    "nav": {
+        "home": "Início",
+        "agenda": "Agenda",
+        "about": "Sobre",
+        "members": "Membros",
+        "repertoire": "Repertório",
+        "merch": "Merch",
+        "gallery": "Galeria",
+        "contact": "Contato"
+    },
+    "hero": {
+        "subtitle": "BLUES ROCK"
+    },
+    "agenda": {
+        "title": "Próximos Shows",
+        "buy_tickets": "Ingressos"
+    },
+    "about": {
+        "title": "Sobre a Banda"
+    },
+    "members": {
+        "title": "Membros"
+    },
+    "repertoire": {
+        "title": "Repertório",
+        "subtitle": "Ouça nossas músicas",
+        "listen": "Ouvir"
+    },
+    "gallery": {
+        "title": "Galeria",
+        "allPhotos": "Todas as Fotos",
+        "albums": "Álbuns",
+        "backToAlbums": "Voltar para Álbuns"
+    },
+    "merch": {
+        "title": "Merchandise Oficial",
+        "buy": "Comprar"
+    },
+    "contact": {
+        "title": "Fale Conosco",
+        "name": "Nome",
+        "email": "Email",
+        "message": "Mensagem",
+        "send": "Enviar Mensagem"
+    }
+}
