@@ -216,13 +216,13 @@ p {
 .glitch-logo::before {
   left: 3px;
   animation: glitch-anim-logo-1 2.5s infinite linear alternate-reverse;
-  filter: drop-shadow(-2px 0 red);
+  filter: drop-shadow(-2px 0 black);
 }
 
 .glitch-logo::after {
   left: -3px;
   animation: glitch-anim-logo-2 3s infinite linear alternate-reverse;
-  filter: drop-shadow(2px 0 blue);
+  filter: drop-shadow(2px 0 black);
 }
 
 @keyframes glitch-anim-1 {
@@ -322,6 +322,22 @@ p {
   .glitch-logo {
     width: 280px;
     height: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2.2rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+
+  .glitch-logo {
+    width: 220px;
+    height: 110px;
   }
 }
 </style>

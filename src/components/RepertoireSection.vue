@@ -24,10 +24,38 @@ const { t } = useI18n();
           data-aos="fade-up"
         >
           <div class="song-info">
+            <div class="icon-wrapper">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+              </svg>
+            </div>
             <h3 class="song-title">{{ song.title }}</h3>
           </div>
           <a :href="song.url" target="_blank" class="listen-btn">
-            <span class="icon">▶</span>
+            <span class="icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                stroke="none"
+              >
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </span>
             <span class="text">{{ t("repertoire.listen") }}</span>
           </a>
         </div>
@@ -43,13 +71,13 @@ const { t } = useI18n();
 <style scoped>
 .repertoire-section {
   padding: 6rem 2rem;
-  background-color: #000;
+  background-color: #050505;
   color: #fff;
   position: relative;
 }
 
 .container {
-  max-width: 800px; /* Narrower container for list view */
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -61,71 +89,124 @@ const { t } = useI18n();
 .section-title {
   font-size: 3rem;
   margin-bottom: 0.5rem;
-  font-family: "Cinzel", serif;
+  font-family: var(--font-display);
   color: var(--color-primary);
-  text-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .section-subtitle {
   font-size: 1.2rem;
-  color: #aaa;
+  color: #888;
   font-style: italic;
 }
 
 .songs-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 .song-card {
-  background: rgba(20, 20, 20, 0.8);
-  border: 1px solid #333;
+  background: linear-gradient(145deg, #111, #0a0a0a);
+  border: 1px solid #222;
   padding: 1.5rem 2rem;
-  border-radius: 8px;
+  border-radius: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.song-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--color-primary);
+  opacity: 0;
+  transition: 0.3s;
 }
 
 .song-card:hover {
-  border-color: var(--color-primary);
-  transform: translateX(10px); /* Slide right on hover */
-  background: rgba(30, 30, 30, 0.9);
+  border-color: #333;
+  transform: translateX(5px);
+  background: #161616;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.song-card:hover::before {
+  opacity: 1;
+}
+
+.song-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.icon-wrapper {
+  width: 40px;
+  height: 40px;
+  background: #1a1a1a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  transition: 0.3s;
+}
+
+.song-card:hover .icon-wrapper {
+  background: var(--color-primary);
+  color: #fff;
+  transform: rotate(10deg);
 }
 
 .song-title {
-  font-size: 1.3rem;
-  font-weight: bold;
+  font-size: 1.2rem;
+  font-weight: 500;
   margin: 0;
-  color: #eee;
+  color: #ddd;
+  font-family: var(--font-main);
+  letter-spacing: 0.5px;
+}
+
+.song-card:hover .song-title {
+  color: #fff;
 }
 
 .listen-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.8rem;
   background: transparent;
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
-  padding: 0.5rem 1.2rem;
-  border-radius: 30px; /* Pill shape */
+  border: 1px solid #333;
+  color: #888;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   transition: all 0.3s ease;
   text-transform: uppercase;
+  font-weight: bold;
   letter-spacing: 1px;
 }
 
 .listen-btn:hover {
-  background: var(--color-primary);
-  color: #fff;
-  box-shadow: 0 0 15px rgba(220, 20, 60, 0.4);
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+  transform: scale(1.05);
 }
 
 .listen-btn .icon {
-  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
 }
 
 .no-songs {
@@ -141,11 +222,32 @@ const { t } = useI18n();
   }
 
   .song-card {
-    padding: 1rem;
+    padding: 1.2rem;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+    align-items: center;
   }
 
-  .song-title {
-    font-size: 1.1rem;
+  .song-info {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .song-card::before {
+    width: 100%;
+    height: 4px;
+    top: 0;
+    left: 0;
+  }
+
+  .song-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .listen-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

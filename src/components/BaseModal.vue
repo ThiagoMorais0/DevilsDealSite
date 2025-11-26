@@ -24,7 +24,7 @@ defineEmits<{
 
       <footer class="modal-footer">
         <button class="cancel-btn" @click="$emit('close')">Cancelar</button>
-        <button class="save-btn" @click="$emit('save')">Salvar</button>
+        <button class="save-btn" @click="$emit('save')">Confirmar</button>
       </footer>
     </div>
   </div>

@@ -842,7 +842,7 @@ const saveRiderItem = async () => {
               v-model="newMember.role"
               placeholder="Função (ex: Vocalista)"
             />
-            <input v-model="newMember.instagram" placeholder="Instagram URL" />
+            <input v-model="newMember.instagram" placeholder="Instagram (@usuario)" />
           </div>
           <textarea
             v-model="newMember.description"
@@ -1228,7 +1228,7 @@ const saveRiderItem = async () => {
       </div>
       <div class="form-group">
         <label>Instagram</label>
-        <input v-model="editMemberForm.instagram" />
+        <input v-model="editMemberForm.instagram" placeholder="@usuario" />
       </div>
       <div class="form-group">
         <label>Fotos</label>

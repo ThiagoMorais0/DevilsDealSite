@@ -43,5 +43,14 @@
         "email": "Email",
         "message": "Message",
         "send": "Send Message"
+    },
+    "rider": {
+        "title": "Technical Rider",
+        "stageMap": "Stage Map",
+        "downloadMap": "Download Map",
+        "equipmentList": "Equipment List",
+        "minimum": "Minimum",
+        "alternative": "Alternative",
+        "observations": "Observations"
     }
 }

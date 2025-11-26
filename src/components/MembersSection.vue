@@ -30,10 +30,14 @@ const store = useBandStore();
             <p>{{ member.description }}</p>
             <a
               v-if="member.instagram"
-              :href="member.instagram"
+              :href="`https://www.instagram.com/${member.instagram.replace('@', '')}`"
               target="_blank"
               class="insta-link"
             >
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png"
+                alt="Instagram"
+              />
               Instagram
             </a>
           </div>
@@ -140,6 +144,15 @@ const store = useBandStore();
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.insta-link img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
 }
 
 .insta-link:hover {
