@@ -4,12 +4,12 @@ import { useBandStore } from "../stores/bandStore";
 import Swal from "sweetalert2";
 
 const props = defineProps<{
-  modelValue: string | string[];
+  modelValue: string | string[] | undefined | null;
   multiple?: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value: string | string[]): void;
+  (e: "update:modelValue", value: string | string[] | undefined | null): void;
 }>();
 
 const store = useBandStore();

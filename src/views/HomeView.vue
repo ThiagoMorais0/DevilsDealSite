@@ -10,6 +10,7 @@ import MembersSection from "../components/MembersSection.vue";
 import RepertoireSection from "../components/RepertoireSection.vue";
 import GallerySection from "../components/GallerySection.vue";
 import MerchSection from "../components/MerchSection.vue";
+import TechnicalRiderSection from "../components/TechnicalRiderSection.vue";
 import ContactSection from "../components/ContactSection.vue";
 
 const { t } = useI18n();
@@ -53,6 +54,9 @@ onMounted(() => {
           case "merch":
             sectionName = t("nav.merch");
             break;
+          case "rider":
+            sectionName = t("rider.title");
+            break;
           case "contact":
             sectionName = t("nav.contact");
             break;
@@ -85,6 +89,7 @@ onUnmounted(() => {
       <RepertoireSection />
       <GallerySection />
       <MerchSection />
+      <TechnicalRiderSection />
       <ContactSection />
     </main>
 

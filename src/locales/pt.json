@@ -43,5 +43,14 @@
         "email": "Email",
         "message": "Mensagem",
         "send": "Enviar Mensagem"
+    },
+    "rider": {
+        "title": "Rider Técnico",
+        "stageMap": "Mapa de Palco",
+        "downloadMap": "Baixar Mapa",
+        "equipmentList": "Lista de Equipamentos",
+        "minimum": "Mínimo",
+        "alternative": "Alternativa",
+        "observations": "Observações"
     }
 }

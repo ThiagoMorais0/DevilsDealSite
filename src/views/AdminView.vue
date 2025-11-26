@@ -6,6 +6,7 @@ import {
   type Member,
   type Product,
   type Album,
+  type TechnicalRiderItem,
 } from "../stores/bandStore";
 import BaseModal from "../components/BaseModal.vue";
 import ImageUpload from "../components/ImageUpload.vue";
@@ -87,6 +88,39 @@ const confirmAction = async (
   }
 };
 
+// Helper for Clear All Confirmation
+const confirmClear = async (
+  title: string,
+  text: string,
+  callback: () => Promise<void> | void
+) => {
+  const result = await Swal.fire({
+    title,
+    text,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Sim, limpar tudo!",
+    cancelButtonText: "Cancelar",
+    background: "#111",
+    color: "#fff",
+  });
+
+  if (result.isConfirmed) {
+    await callback();
+    Swal.fire({
+      title: "Limpo!",
+      text: "Todos os itens foram removidos.",
+      icon: "success",
+      background: "#111",
+      color: "#fff",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+  }
+};
+
 // Helper for Success Toast
 const showSuccess = (title: string) => {
   Swal.fire({
@@ -119,6 +153,14 @@ const removeBanner = (index: number) => {
   );
 };
 
+const clearBanners = () => {
+  confirmClear(
+    "Limpar Banners?",
+    "Isso removerá todas as imagens do banner.",
+    () => store.clearBanners()
+  );
+};
+
 // Agenda
 const newShow = ref({
   date: "",
@@ -148,6 +190,12 @@ const addShow = async () => {
 const removeShow = (id: number) => {
   confirmAction("Remover Show?", "Essa ação não pode ser desfeita.", () =>
     store.removeShow(id)
+  );
+};
+
+const clearShows = () => {
+  confirmClear("Limpar Agenda?", "Isso removerá todos os shows cadastrados.", () =>
+    store.clearShows()
   );
 };
 
@@ -213,6 +261,14 @@ const addMember = async () => {
 const removeMember = (id: number) => {
   confirmAction("Remover Membro?", "Essa ação não pode ser desfeita.", () =>
     store.removeMember(id)
+  );
+};
+
+const clearMembers = () => {
+  confirmClear(
+    "Limpar Membros?",
+    "Isso removerá todos os membros cadastrados.",
+    () => store.clearMembers()
   );
 };
 
@@ -288,6 +344,14 @@ const removeProduct = (id: number) => {
   );
 };
 
+const clearProducts = () => {
+  confirmClear(
+    "Limpar Produtos?",
+    "Isso removerá todos os produtos cadastrados.",
+    () => store.clearProducts()
+  );
+};
+
 // Merch Edit
 const productModalOpen = ref(false);
 const editingProduct = ref<Product | null>(null);
@@ -348,6 +412,14 @@ const addAlbum = async () => {
 const deleteAlbum = (id: number) => {
   confirmAction("Excluir Álbum?", "Todas as fotos serão perdidas.", () =>
     store.deleteAlbum(id)
+  );
+};
+
+const clearAlbums = () => {
+  confirmClear(
+    "Limpar Galeria?",
+    "Isso removerá todos os álbuns e fotos.",
+    () => store.clearAlbums()
   );
 };
 
@@ -476,6 +548,96 @@ const removeSong = (id: number) => {
     store.removeSong(id)
   );
 };
+
+const clearSongs = () => {
+  confirmClear(
+    "Limpar Repertório?",
+    "Isso removerá todas as músicas cadastradas.",
+    () => store.clearSongs()
+  );
+};
+
+// Technical Rider
+const newRiderItem = ref({
+  name: "",
+  quantity: 1,
+  minimum: 1,
+  alternative: "",
+  observations: "",
+  photos: [] as string[],
+});
+
+const addRiderItem = async () => {
+  if (!newRiderItem.value.name) {
+    Swal.fire({
+      icon: "error",
+      title: "Erro",
+      text: "Nome é obrigatório!",
+      background: "#111",
+      color: "#fff",
+    });
+    return;
+  }
+  await store.addRiderItem(newRiderItem.value);
+  newRiderItem.value = {
+    name: "",
+    quantity: 1,
+    minimum: 1,
+    alternative: "",
+    observations: "",
+    photos: [],
+  };
+  showSuccess("Item adicionado!");
+};
+
+const removeRiderItem = (id: number) => {
+  confirmAction("Remover Item?", "Essa ação não pode ser desfeita.", () =>
+    store.removeRiderItem(id)
+  );
+};
+
+const clearRiderItems = () => {
+  confirmClear(
+    "Limpar Rider?",
+    "Isso removerá todos os itens do rider técnico.",
+    () => store.clearRiderItems()
+  );
+};
+
+// Rider Edit
+const riderModalOpen = ref(false);
+const editingRiderItem = ref<TechnicalRiderItem | null>(null);
+const editRiderForm = ref({
+  id: 0,
+  name: "",
+  quantity: 1,
+  minimum: 1,
+  alternative: "",
+  observations: "",
+  photos: [] as string[],
+});
+
+const openEditRiderItem = (item: TechnicalRiderItem) => {
+  editingRiderItem.value = item;
+  editRiderForm.value = {
+    ...item,
+    id: item.id || 0,
+    photos: [...item.photos],
+    alternative: item.alternative || "",
+    observations: item.observations || "",
+  };
+  riderModalOpen.value = true;
+};
+
+const saveRiderItem = async () => {
+  if (editingRiderItem.value) {
+    await store.updateRiderItem({
+      ...editRiderForm.value,
+    });
+    riderModalOpen.value = false;
+    showSuccess("Item atualizado!");
+  }
+};
 </script>
 
 <template>
@@ -555,6 +717,12 @@ const removeSong = (id: number) => {
         >
           Repertório
         </button>
+        <button
+          :class="{ active: activeTab === 'rider' }"
+          @click="activeTab = 'rider'"
+        >
+          Rider & Mapa
+        </button>
         <div class="nav-divider"></div>
         <button @click="logout" class="logout-btn">Sair</button>
         <router-link to="/" class="view-site-btn">Ver Site</router-link>
@@ -596,6 +764,10 @@ const removeSong = (id: number) => {
             <button @click="removeBanner(index)" class="delete-btn">X</button>
           </div>
         </div>
+
+        <div v-if="store.config.bannerImages.length > 0" style="margin-top: 2rem;">
+            <button @click="clearBanners" class="delete-all-btn">Limpar Tudo</button>
+        </div>
       </section>
 
       <!-- Agenda Section -->
@@ -632,6 +804,10 @@ const removeSong = (id: number) => {
               </button>
             </div>
           </div>
+        </div>
+        
+        <div v-if="store.shows.length > 0" style="margin-top: 2rem;">
+            <button @click="clearShows" class="delete-all-btn">Limpar Tudo</button>
         </div>
       </section>
 
@@ -720,6 +896,10 @@ const removeSong = (id: number) => {
             </div>
           </div>
         </div>
+
+        <div v-if="store.members.length > 0" style="margin-top: 2rem;">
+            <button @click="clearMembers" class="delete-all-btn">Limpar Tudo</button>
+        </div>
       </section>
 
       <!-- Merch Section -->
@@ -780,6 +960,10 @@ const removeSong = (id: number) => {
               </button>
             </div>
           </div>
+        </div>
+
+        <div v-if="store.products.length > 0" style="margin-top: 2rem;">
+            <button @click="clearProducts" class="delete-all-btn">Limpar Tudo</button>
         </div>
       </section>
 
@@ -865,6 +1049,10 @@ const removeSong = (id: number) => {
             </div>
           </div>
         </div>
+
+        <div v-if="store.albums.length > 0" style="margin-top: 2rem;">
+            <button @click="clearAlbums" class="delete-all-btn">Limpar Tudo</button>
+        </div>
       </section>
 
       <!-- Repertoire Section -->
@@ -898,6 +1086,90 @@ const removeSong = (id: number) => {
               </button>
             </div>
           </div>
+        </div>
+
+        <div v-if="store.songs.length > 0" style="margin-top: 2rem;">
+            <button @click="clearSongs" class="delete-all-btn">Limpar Tudo</button>
+        </div>
+      </section>
+
+      <!-- Rider & Map Section -->
+      <section v-if="activeTab === 'rider'">
+        <h3>Mapa de Palco</h3>
+        <div class="form-group">
+          <label>Imagem do Mapa de Palco</label>
+          <ImageUpload v-model="store.config.stageMapUrl" />
+          <button
+            @click="store.updateConfig()"
+            class="action-btn"
+            style="margin-top: 1rem"
+          >
+            Salvar Mapa
+          </button>
+        </div>
+
+        <h3 style="margin-top: 3rem">Technical Rider</h3>
+        <div class="add-form">
+          <h4>Adicionar Equipamento</h4>
+          <div class="grid-2">
+            <input v-model="newRiderItem.name" placeholder="Nome do Equipamento" />
+            <input
+              v-model="newRiderItem.quantity"
+              type="number"
+              placeholder="Quantidade"
+            />
+            <input
+              v-model="newRiderItem.minimum"
+              type="number"
+              placeholder="Mínimo"
+            />
+            <input
+              v-model="newRiderItem.alternative"
+              placeholder="Alternativa"
+            />
+          </div>
+          <textarea
+            v-model="newRiderItem.observations"
+            placeholder="Observações"
+            rows="2"
+          ></textarea>
+          <label style="margin-top: 1rem; display: block; color: #aaa"
+            >Fotos do Equipamento</label
+          >
+          <ImageUpload v-model="newRiderItem.photos" :multiple="true" />
+          <button @click="addRiderItem" class="action-btn">
+            Adicionar Item
+          </button>
+        </div>
+
+        <div class="list-container">
+          <div
+            v-for="item in store.technicalRider"
+            :key="item.id"
+            class="list-item"
+          >
+            <div class="info">
+              <strong>{{ item.name }}</strong> (Qtd: {{ item.quantity }})
+              <div v-if="item.observations" style="font-size: 0.8rem; color: #aaa">
+                Obs: {{ item.observations }}
+              </div>
+            </div>
+            <div class="actions">
+              <button @click="openEditRiderItem(item)" class="edit-btn-text">
+                Editar
+              </button>
+              <button
+                @click="item.id && removeRiderItem(item.id)"
+                class="delete-btn-text"
+              >
+                Remover
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="store.technicalRider.length > 0" style="margin-top: 2rem;">
+            <button @click="clearRiderItems" class="delete-all-btn">Limpar Tudo</button>
         </div>
       </section>
     </main>
@@ -1017,6 +1289,40 @@ const removeSong = (id: number) => {
       <div class="form-group">
         <label>Capa</label>
         <ImageUpload v-model="editAlbumForm.cover_url" />
+      </div>
+    </BaseModal>
+
+    <BaseModal
+      :is-open="riderModalOpen"
+      title="Editar Item do Rider"
+      @close="riderModalOpen = false"
+      @save="saveRiderItem"
+    >
+      <div class="form-group">
+        <label>Nome</label>
+        <input v-model="editRiderForm.name" />
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Quantidade</label>
+          <input v-model="editRiderForm.quantity" type="number" />
+        </div>
+        <div class="form-group">
+          <label>Mínimo</label>
+          <input v-model="editRiderForm.minimum" type="number" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Alternativa</label>
+        <input v-model="editRiderForm.alternative" />
+      </div>
+      <div class="form-group">
+        <label>Observações</label>
+        <textarea v-model="editRiderForm.observations" rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Fotos</label>
+        <ImageUpload v-model="editRiderForm.photos" :multiple="true" />
       </div>
     </BaseModal>
   </div>
@@ -1500,5 +1806,21 @@ textarea {
   background: #222;
   color: #fff;
   border-color: #666;
+}
+
+.delete-all-btn {
+  background: #d32f2f;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  transition: 0.3s;
+}
+
+.delete-all-btn:hover {
+  background: #b71c1c;
 }
 </style>

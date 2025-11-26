@@ -36,6 +36,17 @@ export interface SiteConfig {
     logoUrl: string
     bannerImages: string[]
     aboutText: string
+    stageMapUrl?: string
+}
+
+export interface TechnicalRiderItem {
+    id?: number
+    name: string
+    quantity: number
+    minimum: number
+    alternative?: string
+    observations?: string
+    photos: string[]
 }
 
 export interface Photo {
@@ -70,7 +81,9 @@ export const useBandStore = defineStore('band', () => {
     const members = ref<Member[]>([])
     const products = ref<Product[]>([])
     const albums = ref<Album[]>([])
-    const songs = ref<Song[]>([]) // New State
+
+    const songs = ref<Song[]>([])
+    const technicalRider = ref<TechnicalRiderItem[]>([]) // New State
     const isLoading = ref(false)
     const error = ref<string | null>(null)
 
@@ -86,7 +99,8 @@ export const useBandStore = defineStore('band', () => {
                     id: configData.id,
                     logoUrl: configData.logo_url,
                     aboutText: configData.about_text,
-                    bannerImages: configData.banner_images || []
+                    bannerImages: configData.banner_images || [],
+                    stageMapUrl: configData.stage_map_url
                 }
             }
 
@@ -136,6 +150,20 @@ export const useBandStore = defineStore('band', () => {
                 songs.value = songsData
             }
 
+            // Technical Rider
+            const { data: riderData } = await supabase.from('technical_rider').select('*').order('name', { ascending: true })
+            if (riderData) {
+                technicalRider.value = riderData.map(r => ({
+                    id: r.id,
+                    name: r.name,
+                    quantity: r.quantity,
+                    minimum: r.minimum,
+                    alternative: r.alternative,
+                    observations: r.observations,
+                    photos: r.photos || []
+                }))
+            }
+
         } catch (e: any) {
             console.error('Error fetching data:', e)
             error.value = e.message
@@ -151,7 +179,8 @@ export const useBandStore = defineStore('band', () => {
         const payload = {
             logo_url: config.value.logoUrl,
             about_text: config.value.aboutText,
-            banner_images: config.value.bannerImages // Save all banners at once
+            banner_images: config.value.bannerImages, // Save all banners at once
+            stage_map_url: config.value.stageMapUrl
         }
 
         if (config.value.id) {
@@ -361,6 +390,53 @@ export const useBandStore = defineStore('band', () => {
         } else {
             songs.value = songs.value.filter(s => s.id !== id)
         }
+
+    }
+
+    // --- Technical Rider Actions ---
+    const addRiderItem = async (item: Omit<TechnicalRiderItem, 'id'>) => {
+        const payload = {
+            name: item.name,
+            quantity: item.quantity,
+            minimum: item.minimum,
+            alternative: item.alternative,
+            observations: item.observations,
+            photos: item.photos
+        }
+        const { data, error: err } = await supabase.from('technical_rider').insert(payload).select().single()
+        if (err) {
+            console.error('Error adding rider item:', err)
+        } else if (data) {
+            technicalRider.value.push({ ...item, id: data.id })
+        }
+    }
+
+    const removeRiderItem = async (id: number) => {
+        const { error: err } = await supabase.from('technical_rider').delete().eq('id', id)
+        if (err) {
+            console.error('Error deleting rider item:', err)
+        } else {
+            technicalRider.value = technicalRider.value.filter(r => r.id !== id)
+        }
+    }
+
+    const updateRiderItem = async (updatedItem: TechnicalRiderItem) => {
+        if (!updatedItem.id) return
+        const payload = {
+            name: updatedItem.name,
+            quantity: updatedItem.quantity,
+            minimum: updatedItem.minimum,
+            alternative: updatedItem.alternative,
+            observations: updatedItem.observations,
+            photos: updatedItem.photos
+        }
+        const { error: err } = await supabase.from('technical_rider').update(payload).eq('id', updatedItem.id)
+        if (err) {
+            console.error('Error updating rider item:', err)
+        } else {
+            const index = technicalRider.value.findIndex(r => r.id === updatedItem.id)
+            if (index !== -1) technicalRider.value[index] = updatedItem
+        }
     }
 
     // --- Gallery Actions ---
@@ -481,7 +557,9 @@ export const useBandStore = defineStore('band', () => {
         members,
         products,
         albums,
-        songs, // Export songs
+
+        songs,
+        technicalRider,
         isLoading,
         error,
         fetchData,
@@ -513,6 +591,47 @@ export const useBandStore = defineStore('band', () => {
         reorderPhotos,
         // Songs
         addSong,
-        removeSong
+
+        removeSong,
+        // Technical Rider
+        addRiderItem,
+        removeRiderItem,
+        updateRiderItem,
+
+        // Clear Actions
+        clearBanners: async () => {
+            config.value.bannerImages = []
+            await updateConfig()
+        },
+        clearShows: async () => {
+            const { error: err } = await supabase.from('shows').delete().neq('id', 0) // Delete all
+            if (err) console.error('Error clearing shows:', err)
+            else shows.value = []
+        },
+        clearMembers: async () => {
+            const { error: err } = await supabase.from('members').delete().neq('id', 0)
+            if (err) console.error('Error clearing members:', err)
+            else members.value = []
+        },
+        clearProducts: async () => {
+            const { error: err } = await supabase.from('products').delete().neq('id', 0)
+            if (err) console.error('Error clearing products:', err)
+            else products.value = []
+        },
+        clearAlbums: async () => {
+            const { error: err } = await supabase.from('albums').delete().neq('id', 0)
+            if (err) console.error('Error clearing albums:', err)
+            else albums.value = []
+        },
+        clearSongs: async () => {
+            const { error: err } = await supabase.from('songs').delete().neq('id', 0)
+            if (err) console.error('Error clearing songs:', err)
+            else songs.value = []
+        },
+        clearRiderItems: async () => {
+            const { error: err } = await supabase.from('technical_rider').delete().neq('id', 0)
+            if (err) console.error('Error clearing rider items:', err)
+            else technicalRider.value = []
+        }
     }
 })
