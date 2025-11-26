@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from "vue";
 import { useBandStore, type Album, type Photo } from "../stores/bandStore";
 
 const store = useBandStore();
-const activeTab = ref<"all" | "albums">("all");
+const activeTab = ref<"all" | "albums">("albums");
 const selectedAlbum = ref<Album | null>(null);
 const lightboxOpen = ref(false);
 const lightboxImage = ref("");
