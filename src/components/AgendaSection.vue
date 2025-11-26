@@ -4,8 +4,18 @@ import { computed } from "vue";
 
 const store = useBandStore();
 
+const parseDate = (dateString: string) => {
+  // Append T00:00:00 to ensure local time is used if only date is provided
+  // Or better, split and create date manually to avoid timezone shifts
+  const parts = dateString.split("-").map(Number);
+  const year = parts[0] || 0;
+  const month = (parts[1] || 1) - 1;
+  const day = parts[2] || 1;
+  return new Date(year, month, day);
+};
+
 const isPast = (date: string) => {
-  const showDate = new Date(date);
+  const showDate = parseDate(date);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return showDate < today;
@@ -14,13 +24,13 @@ const isPast = (date: string) => {
 const upcomingShows = computed(() => {
   return store.shows
     .filter((s) => !isPast(s.date))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => parseDate(a.date).getTime() - parseDate(b.date).getTime());
 });
 
 const pastShows = computed(() => {
   return store.shows
     .filter((s) => isPast(s.date))
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => parseDate(b.date).getTime() - parseDate(a.date).getTime());
 });
 </script>
 
@@ -41,13 +51,13 @@ const pastShows = computed(() => {
           class="show-card"
         >
           <div class="date-box">
-            <span class="day">{{ new Date(show.date).getDate() }}</span>
+            <span class="day">{{ parseDate(show.date).getDate() }}</span>
             <span class="month">{{
-              new Date(show.date)
+              parseDate(show.date)
                 .toLocaleString("pt-BR", { month: "short" })
                 .toUpperCase()
             }}</span>
-            <span class="year">{{ new Date(show.date).getFullYear() }}</span>
+            <span class="year">{{ parseDate(show.date).getFullYear() }}</span>
           </div>
           <div class="show-info">
             <h3>{{ show.venue }}</h3>
@@ -116,13 +126,13 @@ const pastShows = computed(() => {
           class="show-card past-show"
         >
           <div class="date-box">
-            <span class="day">{{ new Date(show.date).getDate() }}</span>
+            <span class="day">{{ parseDate(show.date).getDate() }}</span>
             <span class="month">{{
-              new Date(show.date)
+              parseDate(show.date)
                 .toLocaleString("pt-BR", { month: "short" })
                 .toUpperCase()
             }}</span>
-            <span class="year">{{ new Date(show.date).getFullYear() }}</span>
+            <span class="year">{{ parseDate(show.date).getFullYear() }}</span>
           </div>
           <div class="show-info">
             <h3>
