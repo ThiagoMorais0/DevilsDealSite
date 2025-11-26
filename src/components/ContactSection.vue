@@ -1,25 +1,105 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from "vue";
+import emailjs from "@emailjs/browser";
+import Swal from "sweetalert2";
+
+const form = ref({
+  name: "",
+  email: "",
+  message: "",
+});
+
+const isSending = ref(false);
+
+const sendEmail = async () => {
+  if (!form.value.name || !form.value.email || !form.value.message) {
+    Swal.fire({
+      icon: "warning",
+      title: "Campos obrigatórios",
+      text: "Por favor, preencha todos os campos.",
+      background: "#111",
+      color: "#fff",
+    });
+    return;
+  }
+
+  isSending.value = true;
+
+  try {
+    // REPLACE THESE WITH YOUR ACTUAL EMAILJS KEYS
+    const SERVICE_ID = "YOUR_SERVICE_ID";
+    const TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+    const PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+
+    await emailjs.send(
+      SERVICE_ID,
+      TEMPLATE_ID,
+      {
+        from_name: form.value.name,
+        from_email: form.value.email,
+        message: form.value.message,
+        to_email: "thiagomface@gmail.com",
+      },
+      PUBLIC_KEY
+    );
+
+    Swal.fire({
+      icon: "success",
+      title: "Mensagem Enviada!",
+      text: "Entraremos em contato em breve.",
+      background: "#111",
+      color: "#fff",
+    });
+
+    form.value = { name: "", email: "", message: "" };
+  } catch (error) {
+    console.error("EmailJS Error:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Erro ao enviar",
+      text: "Ocorreu um erro ao enviar sua mensagem. Tente novamente mais tarde.",
+      background: "#111",
+      color: "#fff",
+    });
+  } finally {
+    isSending.value = false;
+  }
+};
+</script>
 
 <template>
   <section id="contact" class="section-dark">
     <div class="container">
       <h2 class="section-title">{{ $t("contact.title") }}</h2>
 
-      <form class="contact-form" @submit.prevent>
+      <form class="contact-form" @submit.prevent="sendEmail">
         <div class="form-group">
-          <input type="text" :placeholder="$t('contact.name')" required />
+          <input
+            v-model="form.name"
+            type="text"
+            :placeholder="$t('contact.name')"
+            required
+          />
         </div>
         <div class="form-group">
-          <input type="email" :placeholder="$t('contact.email')" required />
+          <input
+            v-model="form.email"
+            type="email"
+            :placeholder="$t('contact.email')"
+            required
+          />
         </div>
         <div class="form-group">
           <textarea
+            v-model="form.message"
             rows="5"
             :placeholder="$t('contact.message')"
             required
           ></textarea>
         </div>
-        <button type="submit">{{ $t("contact.send") }}</button>
+        <button type="submit" :disabled="isSending">
+          {{ isSending ? "Enviando..." : $t("contact.send") }}
+        </button>
       </form>
 
       <div class="socials">

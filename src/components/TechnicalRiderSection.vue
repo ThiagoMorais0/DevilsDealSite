@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useBandStore } from "../stores/bandStore";
 import { useI18n } from "vue-i18n";
+import { getLocalized } from "../utils/i18nHelper";
 
 const store = useBandStore();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 </script>
 
 <template>
@@ -25,38 +26,35 @@ const { t } = useI18n();
       <!-- Technical Rider List -->
       <div class="rider-list-container">
         <h3>{{ t("rider.equipmentList") }}</h3>
-        <div class="rider-grid">
-          <div
-            v-for="item in store.technicalRider"
-            :key="item.id"
-            class="rider-card"
-          >
-            <div class="card-header">
-              <h4>{{ item.name }}</h4>
-              <span class="quantity">{{ item.quantity }}x</span>
-            </div>
-            <div class="card-body">
-              <p v-if="item.minimum">
-                <strong>{{ t("rider.minimum") }}:</strong> {{ item.minimum }}
-              </p>
-              <p v-if="item.alternative">
-                <strong>{{ t("rider.alternative") }}:</strong>
-                {{ item.alternative }}
-              </p>
-              <p v-if="item.observations" class="obs">
-                <strong>{{ t("rider.observations") }}:</strong>
-                {{ item.observations }}
-              </p>
-            </div>
-            <div v-if="item.photos && item.photos.length > 0" class="item-photos">
-              <img
-                v-for="(photo, index) in item.photos"
-                :key="index"
-                :src="photo"
-                :alt="item.name"
-              />
-            </div>
-          </div>
+        
+        <div class="table-responsive">
+          <table class="rider-table">
+            <thead>
+              <tr>
+                <th>{{ t("rider.item") }}</th>
+                <th>{{ t("rider.quantity") }}</th>
+                <th>{{ t("rider.minimum") }}</th>
+                <th>{{ t("rider.alternative") }}</th>
+                <th>{{ t("rider.observations") }}</th>
+                <th>Foto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in store.technicalRider" :key="item.id">
+                <td class="item-name">{{ getLocalized(item.name, locale) }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td>{{ item.minimum || "-" }}</td>
+                <td>{{ getLocalized(item.alternative, locale) || "-" }}</td>
+                <td class="obs-cell">{{ getLocalized(item.observations, locale) || "-" }}</td>
+                <td>
+                  <div v-if="item.photos && item.photos.length > 0" class="table-photo">
+                    <img :src="item.photos[0]" :alt="getLocalized(item.name, locale)" />
+                  </div>
+                  <span v-else>-</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -130,81 +128,80 @@ h3 {
   background: #a00;
 }
 
-/* Rider List */
-.rider-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-}
-
-.rider-card {
+/* Rider Table */
+.table-responsive {
+  overflow-x: auto;
   background: #151515;
-  border: 1px solid #333;
   border-radius: 8px;
-  overflow: hidden;
-  transition: 0.3s;
+  border: 1px solid #333;
 }
 
-.rider-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--color-primary);
+.rider-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px; /* Ensure table doesn't squish too much */
 }
 
-.card-header {
+.rider-table th,
+.rider-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #222;
+}
+
+.rider-table th {
   background: #222;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #333;
-}
-
-.card-header h4 {
-  margin: 0;
   color: var(--color-primary);
-  font-size: 1.2rem;
-}
-
-.quantity {
-  background: #333;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  font-weight: bold;
+  font-family: var(--font-display);
+  text-transform: uppercase;
   font-size: 0.9rem;
+  letter-spacing: 1px;
 }
 
-.card-body {
-  padding: 1rem;
+.rider-table tr:last-child td {
+  border-bottom: none;
 }
 
-.card-body p {
-  margin-bottom: 0.5rem;
-  color: #ccc;
-  font-size: 0.95rem;
+.rider-table tr:hover {
+  background: #1a1a1a;
 }
 
-.card-body strong {
+.item-name {
+  font-weight: bold;
   color: #fff;
+  font-size: 1.1rem;
 }
 
-.obs {
+.text-center {
+  text-align: center !important;
+}
+
+.obs-cell {
   font-style: italic;
   color: #aaa;
-  margin-top: 0.5rem;
+  max-width: 300px;
 }
 
-.item-photos {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0 1rem 1rem;
-  overflow-x: auto;
-}
-
-.item-photos img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
+.table-photo {
+  width: 50px;
+  height: 50px;
   border-radius: 4px;
+  overflow: hidden;
   border: 1px solid #444;
+}
+
+.table-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2.5rem;
+  }
+  
+  /* On mobile, we might want to keep the scroll or switch to a stacked view if preferred.
+     For now, the horizontal scroll is a safe bet for tables. */
 }
 </style>

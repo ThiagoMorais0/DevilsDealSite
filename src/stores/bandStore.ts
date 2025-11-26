@@ -1,7 +1,7 @@
-
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '../supabase'
+import type { I18nString } from '../utils/i18nHelper'
 
 export interface Show {
     id?: number
@@ -15,8 +15,8 @@ export interface Show {
 export interface Member {
     id?: number
     name: string
-    role: string
-    description: string
+    role: I18nString
+    description: I18nString
     instagram: string
     photos: string[]
 }
@@ -24,7 +24,7 @@ export interface Member {
 export interface Product {
     id?: number
     name: string
-    description: string
+    description: I18nString
     price: number
     images: string[]
     colors: string[]
@@ -41,11 +41,11 @@ export interface SiteConfig {
 
 export interface TechnicalRiderItem {
     id?: number
-    name: string
+    name: I18nString
     quantity: number
     minimum: number
-    alternative?: string
-    observations?: string
+    alternative?: I18nString
+    observations?: I18nString
     photos: string[]
 }
 

@@ -2,6 +2,7 @@
 import { watch } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import { useBandStore } from "./stores/bandStore";
+import SmokeEffect from "./components/SmokeEffect.vue";
 
 const store = useBandStore();
 const route = useRoute();
@@ -41,6 +42,7 @@ watch(
 </script>
 
 <template>
+  <SmokeEffect />
   <RouterView />
 </template>
 
